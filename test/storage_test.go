@@ -63,3 +63,19 @@ func TestReadFile(t *testing.T) {
 	}
 	stg.Clear()
 }
+
+func TestDelete(t *testing.T) {
+	stg := internal.NewStorage(0)
+	contentString := "Hello, Reader!"
+	fileName := "Final Exam.txt"
+	content := strings.NewReader(contentString)
+	stg.SaveFile(fileName, content)
+	err := stg.Delete(fileName)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if stg.Exists(fileName) {
+		t.Error("the file was not removed")
+	}
+	stg.Clear()
+}

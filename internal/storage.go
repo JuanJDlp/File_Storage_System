@@ -82,10 +82,19 @@ func (st *Storage) readFileStream(path string) (int64, io.ReadCloser, error) {
 	return fileStats.Size(), file, nil
 }
 
+func (st *Storage) Delete(fileName string) error {
+	if !st.Exists(fileName) {
+		return errors.New("the file does not exist or it was not found")
+	}
+	path := st.CreatePathForFile(fileName)
+	paths := strings.Split(path.Path, "/")
+	return os.RemoveAll(fmt.Sprintf("%s/%s", st.DefaultFolder, paths[0]))
+}
+
 // Exists return true if the file is present or false if it isnt present
 func (st *Storage) Exists(fileName string) bool {
 	path := st.CreatePathForFile(fileName)
-	fullPathWithRoot := fmt.Sprintf("%s/%s", st.DefaultFolder, path.Path)
+	fullPathWithRoot := fmt.Sprintf("%s/%s", st.DefaultFolder, path.FullPath())
 	_, err := os.Stat(fullPathWithRoot)
 	return !errors.Is(err, os.ErrNotExist)
 }
