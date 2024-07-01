@@ -31,19 +31,9 @@ func TestSaveFile(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	fileStat, err := file.Stat()
+	contentInTheFile, err := io.ReadAll(file)
 	if err != nil {
 		t.Errorf(err.Error())
-	}
-	contentInTheFile := make([]byte, fileStat.Size())
-	for {
-		n, err := file.Read(contentInTheFile)
-		if err != nil && err != io.EOF {
-			t.Error(err.Error())
-		}
-		if n == 0 {
-			break //End of the file reached
-		}
 	}
 	if string(contentInTheFile) != contentString {
 		t.Errorf("Got %s , expected %s", string(contentInTheFile), contentString)

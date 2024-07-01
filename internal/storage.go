@@ -18,6 +18,7 @@ type File struct {
 	Name string
 }
 
+// FullPath return the path with the folder that is in the path attribute plus the file name at the end
 func (f *File) FullPath() string {
 	return fmt.Sprintf("%s/%s", f.Path, f.Name)
 }
@@ -54,6 +55,32 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 	}
 }
 
+// SaveFile calls writeToFile
+func (st *Storage) SaveFile(path string, r io.Reader) {
+	st.writeToFile(path, r)
+}
+
+// ReadFile generates the complete path of the file and calls readFileStram
+// it returns the size of the file, the reader of the file and an error
+func (st *Storage) ReadFile(fileName string) (int64, io.Reader, error) {
+	path := st.CreatePathForFile(fileName)
+	fullPath := fmt.Sprintf("%s/%s", st.DefaultFolder, path.FullPath())
+	return st.readFileStream(fullPath)
+}
+
+// readFileStream gets the file
+func (st *Storage) readFileStream(path string) (int64, io.ReadCloser, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return 0, nil, err
+	}
+	fileStats, err := file.Stat()
+	if err != nil {
+		return 0, nil, err
+	}
+	return fileStats.Size(), file, nil
+}
+
 // Exists return true if the file is present or false if it isnt present
 func (st *Storage) Exists(fileName string) bool {
 	path := st.CreatePathForFile(fileName)
@@ -65,11 +92,6 @@ func (st *Storage) Exists(fileName string) bool {
 // Clear deletes all the files that the storage is managing
 func (st *Storage) Clear() {
 	os.RemoveAll(st.DefaultFolder)
-}
-
-// SaveFile calls writeToFile
-func (st *Storage) SaveFile(path string, r io.Reader) {
-	st.writeToFile(path, r)
 }
 
 // openFileForWriting creates the necesary directories, once that is done, it creates the fiel
