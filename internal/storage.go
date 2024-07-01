@@ -60,7 +60,7 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 // The io.Reader representes the content of the file
 func (st *Storage) SaveFile(fileName string, r io.Reader) (int64, error) {
 	if st.Exists(fileName) {
-		return 0, nil
+		return 0, errors.New("the file alredy exists")
 	}
 	return st.writeToFile(fileName, r)
 }
