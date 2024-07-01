@@ -56,6 +56,7 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 }
 
 // SaveFile calls writeToFile
+// The io.Reader representes the content of the file
 func (st *Storage) SaveFile(path string, r io.Reader) {
 	st.writeToFile(path, r)
 }

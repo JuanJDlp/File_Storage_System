@@ -40,3 +40,26 @@ func TestSaveFile(t *testing.T) {
 	}
 	stg.Clear()
 }
+
+func TestReadFile(t *testing.T) {
+	stg := internal.NewStorage(0)
+	contentString := "Hello, Reader!"
+	fileName := "Final Exam.txt"
+	content := strings.NewReader(contentString)
+	stg.SaveFile(fileName, content)
+	size, file, err := stg.ReadFile(fileName)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if size == 0 {
+		t.Error("The file is empty")
+	}
+	words, err := io.ReadAll(file)
+	if string(words) != contentString {
+		t.Error("The content doe snot match")
+	}
+	if err != nil {
+		t.Error(err.Error())
+	}
+	stg.Clear()
+}
