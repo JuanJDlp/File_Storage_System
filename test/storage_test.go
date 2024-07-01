@@ -77,5 +77,4 @@ func TestDelete(t *testing.T) {
 	if stg.Exists(fileName) {
 		t.Error("the file was not removed")
 	}
-	stg.Clear()
 }

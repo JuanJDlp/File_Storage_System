@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -82,13 +83,72 @@ func (st *Storage) readFileStream(path string) (int64, io.ReadCloser, error) {
 	return fileStats.Size(), file, nil
 }
 
+// Delete will erase the file and any directories it was in that do not contain other files in it.
 func (st *Storage) Delete(fileName string) error {
 	if !st.Exists(fileName) {
 		return errors.New("the file does not exist or it was not found")
 	}
+
 	path := st.CreatePathForFile(fileName)
-	paths := strings.Split(path.Path, "/")
-	return os.RemoveAll(fmt.Sprintf("%s/%s", st.DefaultFolder, paths[0]))
+	filePath := filepath.Join(st.DefaultFolder, path.FullPath())
+	err := os.RemoveAll(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to remove file or directory: %w", err)
+	}
+
+	return st.deleteEmptyFolders(st.DefaultFolder)
+}
+
+func (st *Storage) deleteEmptyFolders(root string) error {
+	isEmpty, err := isEmptyDir(root)
+	if err != nil {
+		return err
+	}
+
+	if isEmpty {
+		return os.Remove(root)
+	}
+
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			err = st.deleteEmptyFolders(filepath.Join(root, entry.Name()))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// Re-check if the directory is empty after attempting to delete subdirectories.
+	isEmpty, err = isEmptyDir(root)
+	if err != nil {
+		return err
+	}
+
+	if isEmpty && root != st.DefaultFolder {
+		return os.Remove(root)
+	}
+
+	return nil
+}
+
+func isEmptyDir(path string) (bool, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	list, err := f.Readdirnames(-1)
+	if err != nil {
+		return false, err
+	}
+
+	return len(list) == 0, nil
 }
 
 // Exists return true if the file is present or false if it isnt present
