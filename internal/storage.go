@@ -99,6 +99,11 @@ func (st *Storage) Delete(fileName string) error {
 	return st.deleteEmptyFolders(st.DefaultFolder)
 }
 
+// deleteEmptyFolders will recursively delete the nested folder for a file.
+// it start from the root and since the root is not empty it keeps goig down
+// once it reacher the end, since the dic is empty because we removed the file
+// the recursion starts
+// I had to implement it this way since we dont want to delete another files as colateral damage
 func (st *Storage) deleteEmptyFolders(root string) error {
 	isEmpty, err := isEmptyDir(root)
 	if err != nil {
@@ -136,6 +141,7 @@ func (st *Storage) deleteEmptyFolders(root string) error {
 	return nil
 }
 
+// isEmptyDir returns if a folder is empty
 func isEmptyDir(path string) (bool, error) {
 	f, err := os.Open(path)
 	if err != nil {
