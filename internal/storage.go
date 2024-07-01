@@ -58,8 +58,11 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 
 // SaveFile calls writeToFile
 // The io.Reader representes the content of the file
-func (st *Storage) SaveFile(path string, r io.Reader) {
-	st.writeToFile(path, r)
+func (st *Storage) SaveFile(fileName string, r io.Reader) (int64, error) {
+	if st.Exists(fileName) {
+		return 0, nil
+	}
+	return st.writeToFile(fileName, r)
 }
 
 // ReadFile generates the complete path of the file and calls readFileStram

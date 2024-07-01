@@ -56,7 +56,7 @@ func TestReadFile(t *testing.T) {
 	}
 	words, err := io.ReadAll(file)
 	if string(words) != contentString {
-		t.Error("The content doe snot match")
+		t.Error("The content does not match")
 	}
 	if err != nil {
 		t.Error(err.Error())
@@ -77,4 +77,5 @@ func TestDelete(t *testing.T) {
 	if stg.Exists(fileName) {
 		t.Error("the file was not removed")
 	}
+	stg.Clear()
 }
