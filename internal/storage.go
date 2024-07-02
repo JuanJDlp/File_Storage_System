@@ -89,7 +89,7 @@ func (st *Storage) readFileStream(path string) (int64, io.ReadCloser, error) {
 // Delete will erase the file and any directories it was in that do not contain other files in it.
 func (st *Storage) Delete(fileName string) error {
 	if !st.Exists(fileName) {
-		return errors.New("the file does not exist or it was not found")
+		return errors.New("the file does not exist or it was not found" + fileName)
 	}
 
 	path := st.CreatePathForFile(fileName)
@@ -98,8 +98,9 @@ func (st *Storage) Delete(fileName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to remove file or directory: %w", err)
 	}
+	paths := strings.Split(path.Path, "/")
 
-	return st.deleteEmptyFolders(st.DefaultFolder)
+	return st.deleteEmptyFolders(fmt.Sprintf("%s/%s", st.DefaultFolder, paths[0]))
 }
 
 // deleteEmptyFolders will recursively delete the nested folder for a file.

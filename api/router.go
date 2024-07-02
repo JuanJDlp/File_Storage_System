@@ -7,13 +7,13 @@ import (
 
 type router struct {
 	e            *echo.Echo
-	filesHandler *FilesHanlder
+	filesHandler *FilesHandler
 }
 
 func NewRouter() *router {
 	e := echo.New()
 	storage := internal.NewStorage(0)
-	filesHadler := &FilesHanlder{e, storage}
+	filesHadler := &FilesHandler{e, storage}
 
 	return &router{
 		e,
@@ -27,6 +27,6 @@ func (r *router) Start(port string) error {
 	return r.e.Start(":" + port)
 }
 
-func (r *router) Clear(){
+func (r *router) Clear() {
 	r.filesHandler.Clear()
 }
