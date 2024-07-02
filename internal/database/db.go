@@ -3,7 +3,9 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -42,8 +44,30 @@ func NewDatabase() *Database {
 		panic(err)
 	}
 
+	err = runScript("internal/database/sql/creation_script.sql", connection)
+	if err != nil {
+		log.Print(err.Error())
+	}
+
 	return &Database{
 		config:     config,
 		connection: connection,
 	}
+}
+
+func runScript(pathToString string, connection *sql.DB) error {
+	data, err := os.ReadFile(pathToString)
+	if err != nil {
+		return err
+	}
+
+	sql := string(data)
+	sqls := strings.Split(sql, ";\n")
+	for _, sql := range sqls {
+		_, err := connection.Exec(sql)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
