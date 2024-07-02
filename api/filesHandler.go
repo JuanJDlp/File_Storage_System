@@ -24,9 +24,11 @@ func NewFileHandler(e *echo.Echo, storage *internal.Storage , db *database.Datab
 		storage: storage,
 		userRepository: &database.UserRepository{
 			Database: db,
+			TableName: "users",
 		},
 		fileRepository: &database.FileRepository{
 			Database: db,
+			TableName: "files",
 		},
 	}
 }
