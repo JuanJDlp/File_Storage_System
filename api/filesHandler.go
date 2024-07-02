@@ -18,6 +18,19 @@ type FilesHandler struct {
 	fileRepository *database.FileRepository
 }
 
+func NewFileHandler(e *echo.Echo, storage *internal.Storage , db *database.Database) *FilesHandler {
+	return &FilesHandler{
+		e:       e,
+		storage: storage,
+		userRepository: &database.UserRepository{
+			Database: db,
+		},
+		fileRepository: &database.FileRepository{
+			Database: db,
+		},
+	}
+}
+
 func (fh *FilesHandler) Start() {
 	fh.e.POST("/api/v1/files", fh.saveFile)
 	fh.e.DELETE("/api/v1/files", fh.deleteFile)

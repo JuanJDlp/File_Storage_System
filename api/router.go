@@ -15,20 +15,11 @@ func NewRouter() *router {
 	e := echo.New()
 	storage := internal.NewStorage(0)
 	db := database.NewDatabase()
-	filesHadler := &FilesHandler{
-		e:       e,
-		storage: storage,
-		userRepository: &database.UserRepository{
-			Database: db,
-		},
-		fileRepository: &database.FileRepository{
-			Database: db,
-		},
-	}
+	filesHanlder := NewFileHandler(e, storage, db)
 
 	return &router{
 		e,
-		filesHadler,
+		filesHanlder,
 	}
 
 }
