@@ -12,9 +12,10 @@ import (
 )
 
 type FilesHandler struct {
-	e       *echo.Echo
-	storage *internal.Storage
-	db *database.Database
+	e              *echo.Echo
+	storage        *internal.Storage
+	userRepository *database.UserRepository
+	fileRepository *database.FileRepository
 }
 
 func (fh *FilesHandler) Start() {

@@ -14,8 +14,17 @@ type router struct {
 func NewRouter() *router {
 	e := echo.New()
 	storage := internal.NewStorage(0)
-	database := database.NewDatabase()
-	filesHadler := &FilesHandler{e, storage,database}
+	db := database.NewDatabase()
+	filesHadler := &FilesHandler{
+		e:       e,
+		storage: storage,
+		userRepository: &database.UserRepository{
+			Database: db,
+		},
+		fileRepository: &database.FileRepository{
+			Database: db,
+		},
+	}
 
 	return &router{
 		e,
