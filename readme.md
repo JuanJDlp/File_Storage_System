@@ -1,6 +1,5 @@
 TODO:
 
-* Implement concurrency for multiple file upload
 * Implement the database for the metada and the users
 * ADD AUTH
 * add JWT

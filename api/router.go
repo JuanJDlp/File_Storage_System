@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/JuanJDlp/File_Storage_System/internal"
+	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,7 +14,8 @@ type router struct {
 func NewRouter() *router {
 	e := echo.New()
 	storage := internal.NewStorage(0)
-	filesHadler := &FilesHandler{e, storage}
+	database := database.NewDatabase()
+	filesHadler := &FilesHandler{e, storage,database}
 
 	return &router{
 		e,

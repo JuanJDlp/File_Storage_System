@@ -7,12 +7,14 @@ import (
 	"sync"
 
 	"github.com/JuanJDlp/File_Storage_System/internal"
+	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/labstack/echo/v4"
 )
 
 type FilesHandler struct {
 	e       *echo.Echo
 	storage *internal.Storage
+	db *database.Database
 }
 
 func (fh *FilesHandler) Start() {
