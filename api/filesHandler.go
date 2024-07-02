@@ -15,7 +15,8 @@ type FilesHanlder struct {
 
 func (fh *FilesHanlder) Start() {
 	fh.e.POST("/api/v1/files", fh.saveFile)
-	fh.e.DELETE("/api/v1/files/:name", fh.deleteFile)
+	fh.e.DELETE("/api/v1/files", fh.deleteFile)
+	fh.e.DELETE("/api/v1/files/:name", fh.deleteOneFile)
 	fh.e.GET("/api/v1/files/:name", fh.dowloadFile)
 }
 
@@ -41,6 +42,23 @@ func (fh *FilesHanlder) saveFile(c echo.Context) error {
 }
 
 func (fh *FilesHanlder) deleteFile(c echo.Context) error {
+	params := struct {
+		Files []string `json:"files"`
+	}{}
+	c.Bind(&params)
+	for _, fileName := range params.Files {
+		err := fh.storage.Delete(fileName)
+		if err != nil {
+			fh.e.Logger.Print(err.Error())
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+	}
+
+	return c.JSON(http.StatusOK, "ok")
+}
+
+func (fh *FilesHanlder) deleteOneFile(c echo.Context) error {
 	fileName := c.Param("name")
 	err := fh.storage.Delete(fileName)
 	if err != nil {
@@ -50,7 +68,6 @@ func (fh *FilesHanlder) deleteFile(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, "ok")
 }
-
 func (fh *FilesHanlder) dowloadFile(c echo.Context) error {
 	fileName := c.Param("name")
 	size, file, err := fh.storage.ReadFile(fileName)
