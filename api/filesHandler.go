@@ -20,17 +20,21 @@ func (fh *FilesHanlder) Start() {
 }
 
 func (fh *FilesHanlder) saveFile(c echo.Context) error {
-	file, err := c.FormFile("file")
+	form, err := c.MultipartForm()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return err
 	}
+	files := form.File["files"]
+	for _, file := range files {
 
-	src, err := file.Open()
+		src, err := file.Open()
 
-	fh.storage.SaveFile(file.Filename, src)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+		defer src.Close()
 
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		fh.storage.SaveFile(file.Filename, src)
 	}
 
 	return c.JSON(http.StatusOK, "ok")
