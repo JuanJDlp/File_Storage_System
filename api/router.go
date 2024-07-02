@@ -26,3 +26,7 @@ func (r *router) Start(port string) error {
 	r.filesHandler.Start()
 	return r.e.Start(":" + port)
 }
+
+func (r *router) Clear(){
+	r.filesHandler.Clear()
+}

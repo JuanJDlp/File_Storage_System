@@ -63,3 +63,7 @@ func (fh *FilesHanlder) dowloadFile(c echo.Context) error {
 	// Stream the file content to the response
 	return c.Stream(http.StatusOK, "application/octet-stream", file)
 }
+
+func (fh *FilesHanlder) Clear() {
+	fh.storage.Clear()
+}
