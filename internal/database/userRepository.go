@@ -18,6 +18,12 @@ func (ur *UserRepository) Create(user model.UserDatabase) error {
 	return err
 }
 
+func (ur *UserRepository) Update(email, username, password string) error {
+	query := fmt.Sprintf("UPDATE %s SET username = $1, password = $2 WHERE id = $3", ur.TableName)
+	_, err := ur.Database.connection.Exec(query, username, password, email)
+	return err
+}
+
 func (ur *UserRepository) Get(email string) (*model.UserDatabase, error) {
 	var user model.UserDatabase
 	query := fmt.Sprintf("SELECT * FROM %s  WHERE email = $1", ur.TableName)

@@ -1,7 +1,7 @@
 package model
 
 type UserDatabase struct {
-	Email    string
-	Username string
-	Password string
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

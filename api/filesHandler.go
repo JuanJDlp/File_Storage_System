@@ -18,21 +18,23 @@ type FilesHandler struct {
 	fileRepository *database.FileRepository
 }
 
-func NewFileHandler(e *echo.Echo, storage *internal.Storage , db *database.Database) *FilesHandler {
+// NewFileHandler create an instance of the fileHandler
+func NewFileHandler(e *echo.Echo, storage *internal.Storage, db *database.Database) *FilesHandler {
 	return &FilesHandler{
 		e:       e,
 		storage: storage,
 		userRepository: &database.UserRepository{
-			Database: db,
+			Database:  db,
 			TableName: "users",
 		},
 		fileRepository: &database.FileRepository{
-			Database: db,
+			Database:  db,
 			TableName: "files",
 		},
 	}
 }
 
+// Start, start all the routing
 func (fh *FilesHandler) Start() {
 	fh.e.POST("/api/v1/files", fh.saveFile)
 	fh.e.DELETE("/api/v1/files", fh.deleteFile)
@@ -40,6 +42,7 @@ func (fh *FilesHandler) Start() {
 	fh.e.GET("/api/v1/files/:name", fh.dowloadFile)
 }
 
+// saveFile will take the files uploaded by the user in the multipartForm and sabe them
 func (fh *FilesHandler) saveFile(c echo.Context) error {
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -83,6 +86,8 @@ func (fh *FilesHandler) saveFile(c echo.Context) error {
 	return c.JSON(http.StatusOK, "ok")
 }
 
+// deleteFile takes the name of the files to be delete and deletes them all
+// it should be use when you want to delete more that 1 file at the time
 func (fh *FilesHandler) deleteFile(c echo.Context) error {
 	var wg sync.WaitGroup
 	params := struct {
@@ -116,6 +121,7 @@ func (fh *FilesHandler) deleteFile(c echo.Context) error {
 	return c.JSON(http.StatusOK, "ok")
 }
 
+// deleteOneFIle takes the path parameter and deletes the file with that name
 func (fh *FilesHandler) deleteOneFile(c echo.Context) error {
 	fileName := c.Param("name")
 	err := fh.storage.Delete(fileName)
@@ -126,6 +132,8 @@ func (fh *FilesHandler) deleteOneFile(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, "ok")
 }
+
+// dowloadFile takes the name of the file and dowloadsit to the user
 func (fh *FilesHandler) dowloadFile(c echo.Context) error {
 	fileName := c.Param("name")
 	size, file, err := fh.storage.ReadFile(fileName)

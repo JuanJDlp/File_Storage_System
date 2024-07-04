@@ -23,6 +23,7 @@ type databaseConfig struct {
 	dbname   string
 }
 
+// NewDatabase create a new instance and connection with the database, if an error occurs it will panic
 func NewDatabase() *Database {
 	config := &databaseConfig{
 		host:     os.Getenv("DATABASE_HOST"),
@@ -55,6 +56,8 @@ func NewDatabase() *Database {
 	}
 }
 
+// runScript, will run the script located in the sql folder that created the tables, if the
+// tables alredy exist it will throw an error
 func runScript(pathToString string, connection *sql.DB) error {
 	data, err := os.ReadFile(pathToString)
 	if err != nil {
