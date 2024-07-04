@@ -128,8 +128,9 @@ func (fh *FilesHandler) deleteOneFile(c echo.Context) error {
 
 // dowloadFile takes the name of the file and dowloadsit to the user
 func (fh *FilesHandler) dowloadFile(c echo.Context) error {
+	id := c.Request().Context().Value(internal.ContextUserKey).(string)
 	fileName := c.Param("name")
-	size, file, err := fh.storage.ReadFile(fileName)
+	size, file, err := fh.storage.ReadFile(fileName, id)
 	sizeString := strconv.Itoa(int(size))
 	if err != nil {
 		c.Logger().Print(err.Error())

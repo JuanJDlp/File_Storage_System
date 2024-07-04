@@ -95,10 +95,15 @@ func (st *Storage) SaveFile(fileName string, r io.Reader, owner string) (int64, 
 
 // ReadFile generates the complete path of the file and calls readFileStram
 // it returns the size of the file, the reader of the file and an error
-func (st *Storage) ReadFile(fileName string) (int64, io.Reader, error) {
+func (st *Storage) ReadFile(fileName, email string) (int64, io.Reader, error) {
 	path := st.CreatePathForFile(fileName)
 	fullPath := fmt.Sprintf("%s/%s", st.DefaultFolder, path.FullPath())
-	return st.readFileStream(fullPath)
+	if st.fileRepo.IsUserOwner(email, HashString(fileName)) {
+		return st.readFileStream(fullPath)
+
+	} else {
+		return 0, nil, errors.New("this user does not own this file")
+	}
 }
 
 // readFileStream gets the file
@@ -123,10 +128,7 @@ func (st *Storage) Delete(fileName, email string) error {
 	path := st.CreatePathForFile(fileName)
 	filePath := filepath.Join(st.DefaultFolder, path.FullPath())
 
-	err := st.fileRepo.Delete(model.FileDatabase{
-		Hash:  HashString(fileName),
-		Owner: email,
-	})
+	err := st.fileRepo.Delete(email, HashString(fileName))
 	if err != nil {
 		return fmt.Errorf("failed to remove the file from the database: %w", err)
 	}

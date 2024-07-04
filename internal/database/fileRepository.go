@@ -29,11 +29,30 @@ func (fr *FileRepository) Save(file model.FileDatabase) error {
 
 }
 
-func (fr *FileRepository) Delete(file model.FileDatabase) error {
+func (fr *FileRepository) Delete(email, hash string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE hash = $1 AND owner = $2", fr.TableName)
 	_, err := fr.Database.connection.Exec(query,
-		file.Hash,
-		file.Owner,
+		hash,
+		email,
 	)
 	return err
+}
+func (fr *FileRepository) IsUserOwner(email, hash string) bool {
+	query := fmt.Sprintf("SELECT FROM %s WHERE hash = $1 AND owner = $2", fr.TableName)
+	rows, err := fr.Database.connection.Query(query,
+		hash,
+		email,
+	)
+
+	if err != nil {
+		return false
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		return true
+	} else {
+		return false
+	}
 }
