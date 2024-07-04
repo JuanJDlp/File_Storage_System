@@ -20,6 +20,7 @@ type UserHandler struct {
 	userRepository *database.UserRepository
 }
 
+// NewUserHandler creater a new user hanlder with a jwtService and a userRepository
 func NewUserHandler(e *echo.Group, db *database.Database) *UserHandler {
 	return &UserHandler{
 		e: e,
@@ -33,11 +34,14 @@ func NewUserHandler(e *echo.Group, db *database.Database) *UserHandler {
 	}
 }
 
+// Start will activate the endpoints
 func (uh *UserHandler) Start() {
 	uh.e.POST("/login", uh.logIn)
 	uh.e.POST("/register", uh.register)
+	uh.e.POST("/update", internal.NewJwtService().ValidateJWT(uh.updateUser))
 }
 
+// logIn is the functin that will be called when trying to log in
 func (uh *UserHandler) logIn(c echo.Context) error {
 	var user model.UserDatabase
 	if err := c.Bind(&user); err != nil {
@@ -69,13 +73,14 @@ func (uh *UserHandler) logIn(c echo.Context) error {
 	}
 }
 
+// register is the function that is called when the user is creating a new account
 func (uh *UserHandler) register(c echo.Context) error {
 	var user model.UserDatabase
 	if err := c.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "it wasn't possible to get the user, please check your request")
 	}
 
-	password, err := hashPasword(user.Password)
+	password, err := hashPassword(user.Password)
 	if err != nil {
 		c.Logger().Print(err)
 		return err
@@ -105,16 +110,19 @@ func (uh *UserHandler) register(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func hashPasword(password string) (string, error) {
+// hashPassword will create a 32 bytes hash for the password
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
+// unhashPassword will tell you if two passwords are the same
 func unhashPassword(passwordInserted, passwordHashed string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(passwordHashed), []byte(passwordInserted))
 	return err == nil
 }
 
+// updateUser will receive a new username and password and change it on the database
 func (uh *UserHandler) updateUser(c echo.Context) error {
 	var user model.UserDatabase
 
@@ -125,7 +133,7 @@ func (uh *UserHandler) updateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "it wasn't possible to get the user, please check your request")
 	}
 
-	password, err := hashPasword(user.Password)
+	password, err := hashPassword(user.Password)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "There was an error hashing the password", err)
 	}

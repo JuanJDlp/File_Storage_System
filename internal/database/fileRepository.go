@@ -11,11 +11,13 @@ type FileRepository struct {
 	TableName string
 }
 
+//Clear will delete evrery file in the database
 func (fr *FileRepository) Clear() error {
 	_, err := fr.Database.connection.Exec("DELETE FROM files")
 	return err
 }
 
+//Save will save a file into the databe
 func (fr *FileRepository) Save(file model.FileDatabase) error {
 	query := fmt.Sprintf("INSERT INTO %s VALUES ($1, $2, $3, $4, $5)", fr.TableName)
 	_, err := fr.Database.connection.Exec(query,
@@ -29,6 +31,7 @@ func (fr *FileRepository) Save(file model.FileDatabase) error {
 
 }
 
+//Delete will delete an specific file in the database
 func (fr *FileRepository) Delete(email, hash string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE hash = $1 AND owner = $2", fr.TableName)
 	_, err := fr.Database.connection.Exec(query,
@@ -37,6 +40,8 @@ func (fr *FileRepository) Delete(email, hash string) error {
 	)
 	return err
 }
+
+// IsUserOwner will check if a owner has a specific file, this was implemented for security reasons
 func (fr *FileRepository) IsUserOwner(email, hash string) bool {
 	query := fmt.Sprintf("SELECT FROM %s WHERE hash = $1 AND owner = $2", fr.TableName)
 	rows, err := fr.Database.connection.Query(query,
@@ -57,6 +62,7 @@ func (fr *FileRepository) IsUserOwner(email, hash string) bool {
 	}
 }
 
+// GetAllFilesFrom user will get all the files from the database that a users owns, this will not dowload them, only get their names
 func (fr *FileRepository) GetAllFilesFromUser(email string) (*[]model.FilesDTO, error) {
 	var files []model.FilesDTO
 	query := fmt.Sprintf("SELECT filename, size, date_of_upload FROM %s WHERE owner = $1", fr.TableName)

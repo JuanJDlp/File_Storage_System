@@ -18,7 +18,7 @@ type FilesHandler struct {
 
 // NewFileHandler create an instance of the fileHandler
 func NewFileHandler(e *echo.Group, db *database.Database) *FilesHandler {
-	storage := internal.NewStorage(0,db)
+	storage := internal.NewStorage(0, db)
 	return &FilesHandler{
 		e:       e,
 		storage: storage,
@@ -148,6 +148,7 @@ func (fh *FilesHandler) dowloadFile(c echo.Context) error {
 	return c.Stream(http.StatusOK, "application/octet-stream", file)
 }
 
+// GetAllFiles will get all the files from a given user, it will go and get the files from the database
 func (fh *FilesHandler) GetAllFiles(c echo.Context) error {
 	id := c.Request().Context().Value(internal.ContextUserKey).(string)
 	files, err := fh.storage.GetAllFilesFromUser(id)
@@ -158,6 +159,7 @@ func (fh *FilesHandler) GetAllFiles(c echo.Context) error {
 	return c.JSON(http.StatusOK, *files)
 }
 
+// Clear is a function that is only used for debelopend purposes, it will delete all files saved and everything in the database
 func (fh *FilesHandler) Clear() {
 	fh.storage.Clear()
 }

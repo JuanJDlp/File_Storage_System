@@ -12,18 +12,21 @@ type UserRepository struct {
 	TableName string
 }
 
+//Create will create a new user entry in the database
 func (ur *UserRepository) Create(user model.UserDatabase) error {
 	query := fmt.Sprintf("INSERT INTO %s (email, username, password) VALUES ($1, $2, $3)", ur.TableName)
 	_, err := ur.Database.connection.Exec(query, user.Email, user.Username, user.Password)
 	return err
 }
 
+//Update will update an exisisting user in the database
 func (ur *UserRepository) Update(email, username, password string) error {
 	query := fmt.Sprintf("UPDATE %s SET username = $1, password = $2 WHERE id = $3", ur.TableName)
 	_, err := ur.Database.connection.Exec(query, username, password, email)
 	return err
 }
 
+//Get will retreive an user from the database based on their email
 func (ur *UserRepository) Get(email string) (*model.UserDatabase, error) {
 	var user model.UserDatabase
 	query := fmt.Sprintf("SELECT * FROM %s  WHERE email = $1", ur.TableName)
@@ -54,6 +57,7 @@ func (ur *UserRepository) Get(email string) (*model.UserDatabase, error) {
 	return &user, nil
 }
 
+//Delete will remove a user from the database, this function is not yet implemented
 func (ur *UserRepository) Delete(email string) error {
 	query := fmt.Sprintf("DELETE %s WHERE email = $1", ur.TableName)
 	_, err := ur.Database.connection.Exec(query, email)
