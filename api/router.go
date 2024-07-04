@@ -25,8 +25,8 @@ func NewRouter() *router {
 	//Add auth to anything related with files
 	filesEcho.Use(jwt.ValidateJWT)
 
-	filesHanlder := NewFileHandler(filesEcho, storage, db)
-	userHanlder := NewUserHandler(usersEcho, db)
+	filesHanlder := NewFileHandler(filesEcho, storage)
+	userHanlder := NewUserHandler(usersEcho,db)
 
 	return &router{
 		e:            e,

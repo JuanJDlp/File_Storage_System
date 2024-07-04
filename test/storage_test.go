@@ -8,9 +8,14 @@ import (
 	"testing"
 
 	"github.com/JuanJDlp/File_Storage_System/internal"
+	"github.com/joho/godotenv"
 )
 
 func TestGeneratePathFromFileName(t *testing.T) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
 	stg := internal.NewStorage(0)
 	fileName := "Final Exam.pdf"
 	file := stg.CreatePathForFile(fileName)
@@ -21,12 +26,16 @@ func TestGeneratePathFromFileName(t *testing.T) {
 }
 
 func TestSaveFile(t *testing.T) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
 	stg := internal.NewStorage(0)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	path := stg.CreatePathForFile(fileName)
 	content := strings.NewReader(contentString)
-	stg.SaveFile(fileName, content)
+	stg.SaveFile(fileName, content, "j@gmail.com")
 	file, err := os.Open(fmt.Sprintf("%s/%s", stg.DefaultFolder, path.FullPath()))
 	if err != nil {
 		t.Errorf(err.Error())
@@ -42,11 +51,15 @@ func TestSaveFile(t *testing.T) {
 }
 
 func TestReadFile(t *testing.T) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
 	stg := internal.NewStorage(0)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	content := strings.NewReader(contentString)
-	stg.SaveFile(fileName, content)
+	stg.SaveFile(fileName, content, "j@gmail.com")
 	size, file, err := stg.ReadFile(fileName)
 	if err != nil {
 		t.Error(err.Error())
@@ -65,12 +78,16 @@ func TestReadFile(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
 	stg := internal.NewStorage(0)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	content := strings.NewReader(contentString)
-	stg.SaveFile(fileName, content)
-	err := stg.Delete(fileName)
+	stg.SaveFile(fileName, content, "j@gmail.com")
+	err = stg.Delete(fileName)
 	if err != nil {
 		t.Error(err.Error())
 	}

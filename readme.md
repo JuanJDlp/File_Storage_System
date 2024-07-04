@@ -6,4 +6,5 @@ TODO:
 * Finish readme
 * Document the code
 * Put it in the raspberry
-*Improve the auth of the JWT
+*Improve the auth of the JWT (add refresh tokens)
+* Refactor where the dabase creation is

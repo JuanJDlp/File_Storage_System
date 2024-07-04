@@ -7,30 +7,19 @@ import (
 	"sync"
 
 	"github.com/JuanJDlp/File_Storage_System/internal"
-	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/labstack/echo/v4"
 )
 
 type FilesHandler struct {
-	e              *echo.Group
-	storage        *internal.Storage
-	userRepository *database.UserRepository
-	fileRepository *database.FileRepository
+	e       *echo.Group
+	storage *internal.Storage
 }
 
 // NewFileHandler create an instance of the fileHandler
-func NewFileHandler(e *echo.Group, storage *internal.Storage, db *database.Database) *FilesHandler {
+func NewFileHandler(e *echo.Group, storage *internal.Storage) *FilesHandler {
 	return &FilesHandler{
 		e:       e,
 		storage: storage,
-		userRepository: &database.UserRepository{
-			Database:  db,
-			TableName: "users",
-		},
-		fileRepository: &database.FileRepository{
-			Database:  db,
-			TableName: "files",
-		},
 	}
 }
 
@@ -44,6 +33,7 @@ func (fh *FilesHandler) Start() {
 
 // saveFile will take the files uploaded by the user in the multipartForm and sabe them
 func (fh *FilesHandler) saveFile(c echo.Context) error {
+	id := c.Request().Context().Value(internal.ContextUserKey).(string)
 	form, err := c.MultipartForm()
 	if err != nil {
 		return err
@@ -66,7 +56,7 @@ func (fh *FilesHandler) saveFile(c echo.Context) error {
 			}
 			defer src.Close()
 
-			_, err = fh.storage.SaveFile(file.Filename, src)
+			_, err = fh.storage.SaveFile(file.Filename, src, id)
 			if err != nil {
 				errChan <- err
 				return

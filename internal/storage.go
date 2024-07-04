@@ -7,11 +7,15 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/JuanJDlp/File_Storage_System/internal/database"
 )
 
 type Storage struct {
 	BlockSize     int
 	DefaultFolder string
+	fileRepo      *database.FileRepository
+	userRepo      *database.UserRepository
 }
 
 type File struct {
@@ -31,9 +35,18 @@ func NewStorage(blockSize int) *Storage {
 	if blockSize == 0 {
 		blockSize = defaultBlockSize
 	}
+	db := database.NewDatabase()
 	return &Storage{
 		BlockSize:     blockSize,
 		DefaultFolder: defautlFolderName,
+		fileRepo: &database.FileRepository{
+			TableName: "files",
+			Database:  db,
+		},
+		userRepo: &database.UserRepository{
+			TableName: "users",
+			Database:  db,
+		},
 	}
 }
 
@@ -58,11 +71,13 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 
 // SaveFile calls writeToFile
 // The io.Reader representes the content of the file
-func (st *Storage) SaveFile(fileName string, r io.Reader) (int64, error) {
+func (st *Storage) SaveFile(fileName string, r io.Reader, owner string) (int64, error) {
 	if st.Exists(fileName) {
 		return 0, errors.New("the file alredy exists")
 	}
-	return st.writeToFile(fileName, r)
+	size, err := st.writeToFile(fileName, r)
+
+	return size, err
 }
 
 // ReadFile generates the complete path of the file and calls readFileStram
@@ -172,6 +187,7 @@ func (st *Storage) Exists(fileName string) bool {
 // Clear deletes all the files that the storage is managing
 func (st *Storage) Clear() {
 	os.RemoveAll(st.DefaultFolder)
+	st.fileRepo.Clear()
 }
 
 // openFileForWriting creates the necesary directories, once that is done, it creates the fiel
