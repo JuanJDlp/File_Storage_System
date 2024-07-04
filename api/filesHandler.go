@@ -29,6 +29,7 @@ func (fh *FilesHandler) Start() {
 	fh.e.DELETE("", fh.deleteFile)
 	fh.e.DELETE("/:name", fh.deleteOneFile)
 	fh.e.GET("/:name", fh.dowloadFile)
+	fh.e.GET("/all", fh.GetAllFiles)
 }
 
 // saveFile will take the files uploaded by the user in the multipartForm and sabe them
@@ -143,6 +144,16 @@ func (fh *FilesHandler) dowloadFile(c echo.Context) error {
 
 	// Stream the file content to the response
 	return c.Stream(http.StatusOK, "application/octet-stream", file)
+}
+
+func (fh *FilesHandler) GetAllFiles(c echo.Context) error {
+	id := c.Request().Context().Value(internal.ContextUserKey).(string)
+	files, err := fh.storage.GetAllFilesFromUser(id)
+	if err != nil {
+		c.Logger().Print(err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, *files)
 }
 
 func (fh *FilesHandler) Clear() {

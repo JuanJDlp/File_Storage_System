@@ -235,3 +235,7 @@ func (st *Storage) writeToFile(path string, r io.Reader) (int64, error) {
 	defer file.Close()
 	return io.Copy(file, r)
 }
+
+func (st *Storage) GetAllFilesFromUser(email string) (*[]model.FilesDTO, error) {
+	return st.fileRepo.GetAllFilesFromUser(email)
+}

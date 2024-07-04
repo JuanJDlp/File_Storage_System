@@ -56,3 +56,27 @@ func (fr *FileRepository) IsUserOwner(email, hash string) bool {
 		return false
 	}
 }
+
+func (fr *FileRepository) GetAllFilesFromUser(email string) (*[]model.FilesDTO, error) {
+	var files []model.FilesDTO
+	query := fmt.Sprintf("SELECT filename, size, date_of_upload FROM %s WHERE owner = $1", fr.TableName)
+	rows, err := fr.Database.connection.Query(query, email)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var file model.FilesDTO
+		if err := rows.Scan(&file.FileName, &file.Size, &file.Date_of_upload); err != nil {
+			return nil, err
+		}
+		files = append(files, file)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &files, nil
+}
