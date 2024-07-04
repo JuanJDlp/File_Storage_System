@@ -69,7 +69,7 @@ func (fh *FilesHandler) saveFile(c echo.Context) error {
 	close(errChan)
 	for err := range errChan {
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 	}
 

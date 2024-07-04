@@ -7,8 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/JuanJDlp/File_Storage_System/internal/database"
+	"github.com/JuanJDlp/File_Storage_System/internal/model"
 )
 
 type Storage struct {
@@ -18,13 +20,13 @@ type Storage struct {
 	userRepo      *database.UserRepository
 }
 
-type File struct {
+type file struct {
 	Path string
 	Name string
 }
 
 // FullPath return the path with the folder that is in the path attribute plus the file name at the end
-func (f *File) FullPath() string {
+func (f *file) FullPath() string {
 	return fmt.Sprintf("%s/%s", f.Path, f.Name)
 }
 
@@ -52,7 +54,7 @@ func NewStorage(blockSize int) *Storage {
 
 // CreatePathForFile will create a path for a given file name
 // The path contains the original file name at the end and the hashed one as the folders where it is stored
-func (st *Storage) CreatePathForFile(fileName string) File {
+func (st *Storage) CreatePathForFile(fileName string) file {
 	//Get the hash of the file name
 	hashedName := HashString(fileName)
 	//Find how many folders you will create
@@ -63,7 +65,7 @@ func (st *Storage) CreatePathForFile(fileName string) File {
 		from, to := i*st.BlockSize, (i*st.BlockSize)+st.BlockSize
 		paths[i] = hashedName[from:to]
 	}
-	return File{
+	return file{
 		Path: strings.Join(paths, "/"),
 		Name: fileName,
 	}
@@ -76,6 +78,17 @@ func (st *Storage) SaveFile(fileName string, r io.Reader, owner string) (int64, 
 		return 0, errors.New("the file alredy exists")
 	}
 	size, err := st.writeToFile(fileName, r)
+	if err != nil {
+		return 0, err
+	}
+	fileStruct := model.FileDatabase{
+		Hash:           HashString(fileName),
+		FileName:       fileName,
+		Size:           size,
+		Date_of_upload: time.Now(),
+		Owner:          owner,
+	}
+	err = st.fileRepo.Save(fileStruct)
 
 	return size, err
 }
