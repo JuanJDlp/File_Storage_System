@@ -87,7 +87,7 @@ func TestDelete(t *testing.T) {
 	fileName := "Final Exam.txt"
 	content := strings.NewReader(contentString)
 	stg.SaveFile(fileName, content, "j@gmail.com")
-	err = stg.Delete(fileName)
+	err = stg.Delete(fileName, "j@gmail.com")
 	if err != nil {
 		t.Error(err.Error())
 	}

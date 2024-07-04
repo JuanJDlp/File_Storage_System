@@ -65,12 +65,9 @@ func runScript(pathToString string, connection *sql.DB) error {
 	}
 
 	sql := string(data)
-	sqls := strings.Split(sql, ";\n")
+	sqls := strings.Split(sql, ";")
 	for _, sql := range sqls {
-		_, err := connection.Exec(sql)
-		if err != nil {
-			return err
-		}
+		connection.Exec(sql)
 	}
 	return nil
 }

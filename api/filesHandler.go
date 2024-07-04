@@ -79,6 +79,7 @@ func (fh *FilesHandler) saveFile(c echo.Context) error {
 // deleteFile takes the name of the files to be delete and deletes them all
 // it should be use when you want to delete more that 1 file at the time
 func (fh *FilesHandler) deleteFile(c echo.Context) error {
+	id := c.Request().Context().Value(internal.ContextUserKey).(string)
 	var wg sync.WaitGroup
 	params := struct {
 		Files []string `json:"files"`
@@ -92,7 +93,7 @@ func (fh *FilesHandler) deleteFile(c echo.Context) error {
 		wg.Add(1)
 		go func(fileName string) {
 			defer wg.Done()
-			if err := fh.storage.Delete(fileName); err != nil {
+			if err := fh.storage.Delete(fileName, id); err != nil {
 				errChan <- err
 			}
 		}(fileName)
@@ -113,8 +114,10 @@ func (fh *FilesHandler) deleteFile(c echo.Context) error {
 
 // deleteOneFIle takes the path parameter and deletes the file with that name
 func (fh *FilesHandler) deleteOneFile(c echo.Context) error {
+	id := c.Request().Context().Value(internal.ContextUserKey).(string)
+
 	fileName := c.Param("name")
-	err := fh.storage.Delete(fileName)
+	err := fh.storage.Delete(fileName, id)
 	if err != nil {
 		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())

@@ -115,14 +115,23 @@ func (st *Storage) readFileStream(path string) (int64, io.ReadCloser, error) {
 }
 
 // Delete will erase the file and any directories it was in that do not contain other files in it.
-func (st *Storage) Delete(fileName string) error {
+func (st *Storage) Delete(fileName, email string) error {
 	if !st.Exists(fileName) {
 		return errors.New("the file does not exist or it was not found" + fileName)
 	}
 
 	path := st.CreatePathForFile(fileName)
 	filePath := filepath.Join(st.DefaultFolder, path.FullPath())
-	err := os.RemoveAll(filePath)
+
+	err := st.fileRepo.Delete(model.FileDatabase{
+		Hash:  HashString(fileName),
+		Owner: email,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to remove the file from the database: %w", err)
+	}
+
+	err = os.RemoveAll(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to remove file or directory: %w", err)
 	}
