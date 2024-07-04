@@ -15,12 +15,12 @@ import (
 )
 
 type UserHandler struct {
-	e              *echo.Echo
+	e              *echo.Group
 	jwtService     *internal.JwtService
 	userRepository *database.UserRepository
 }
 
-func NewUserHandler(e *echo.Echo, db *database.Database) *UserHandler {
+func NewUserHandler(e *echo.Group, db *database.Database) *UserHandler {
 	return &UserHandler{
 		e: e,
 		jwtService: &internal.JwtService{
@@ -34,8 +34,8 @@ func NewUserHandler(e *echo.Echo, db *database.Database) *UserHandler {
 }
 
 func (uh *UserHandler) Start() {
-	uh.e.POST("/api/v1/login", uh.logIn)
-	uh.e.POST("/api/v1/register", uh.register)
+	uh.e.POST("/login", uh.logIn)
+	uh.e.POST("/register", uh.register)
 }
 
 func (uh *UserHandler) logIn(c echo.Context) error {
@@ -77,7 +77,7 @@ func (uh *UserHandler) register(c echo.Context) error {
 
 	password, err := hashPasword(user.Password)
 	if err != nil {
-		uh.e.Logger.Print(err)
+		c.Logger().Print(err)
 		return err
 	}
 
@@ -92,6 +92,7 @@ func (uh *UserHandler) register(c echo.Context) error {
 	err = uh.userRepository.Create(user)
 
 	if err != nil {
+		c.Logger().Print(err)
 		return echo.NewHTTPError(http.StatusBadRequest, "there was an error creating the user")
 	}
 	response := struct {

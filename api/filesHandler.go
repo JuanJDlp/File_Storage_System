@@ -12,14 +12,14 @@ import (
 )
 
 type FilesHandler struct {
-	e              *echo.Echo
+	e              *echo.Group
 	storage        *internal.Storage
 	userRepository *database.UserRepository
 	fileRepository *database.FileRepository
 }
 
 // NewFileHandler create an instance of the fileHandler
-func NewFileHandler(e *echo.Echo, storage *internal.Storage, db *database.Database) *FilesHandler {
+func NewFileHandler(e *echo.Group, storage *internal.Storage, db *database.Database) *FilesHandler {
 	return &FilesHandler{
 		e:       e,
 		storage: storage,
@@ -36,10 +36,10 @@ func NewFileHandler(e *echo.Echo, storage *internal.Storage, db *database.Databa
 
 // Start, start all the routing
 func (fh *FilesHandler) Start() {
-	fh.e.POST("/api/v1/files", fh.saveFile)
-	fh.e.DELETE("/api/v1/files", fh.deleteFile)
-	fh.e.DELETE("/api/v1/files/:name", fh.deleteOneFile)
-	fh.e.GET("/api/v1/files/:name", fh.dowloadFile)
+	fh.e.POST("", fh.saveFile)
+	fh.e.DELETE("", fh.deleteFile)
+	fh.e.DELETE("/:name", fh.deleteOneFile)
+	fh.e.GET("/:name", fh.dowloadFile)
 }
 
 // saveFile will take the files uploaded by the user in the multipartForm and sabe them
@@ -113,7 +113,7 @@ func (fh *FilesHandler) deleteFile(c echo.Context) error {
 
 	for err := range errChan {
 		if err != nil {
-			fh.e.Logger.Print(err.Error())
+			c.Logger().Print(err.Error())
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 	}
@@ -126,7 +126,7 @@ func (fh *FilesHandler) deleteOneFile(c echo.Context) error {
 	fileName := c.Param("name")
 	err := fh.storage.Delete(fileName)
 	if err != nil {
-		fh.e.Logger.Print(err.Error())
+		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
@@ -139,7 +139,7 @@ func (fh *FilesHandler) dowloadFile(c echo.Context) error {
 	size, file, err := fh.storage.ReadFile(fileName)
 	sizeString := strconv.Itoa(int(size))
 	if err != nil {
-		fh.e.Logger.Print(err.Error())
+		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	// Set the appropriate headers

@@ -1,8 +1,7 @@
 TODO:
 
-* Implement the database for the metada and the users
-* ADD AUTH
-* add JWT
+
+*Link File to user
 * ADD AUTHORIZATION
 * Finish readme
 * Document the code

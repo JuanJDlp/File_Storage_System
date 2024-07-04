@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -17,6 +18,11 @@ const ContextUserKey IdContext = "user"
 
 type JwtService struct {
 	JwtSecret string
+}
+
+func NewJwtService() *JwtService {
+	return &JwtService{
+		JwtSecret: os.Getenv("JWT_SECRET")}
 }
 
 func (jw *JwtService) ValidateJWT(next echo.HandlerFunc) echo.HandlerFunc {
