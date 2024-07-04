@@ -1,6 +1,5 @@
 TODO:
 
-*List all files from a user
 * Refactor where the dabase creation is
 
 * Finish readme

@@ -33,11 +33,10 @@ func (f *file) FullPath() string {
 const defautlFolderName = "storage"
 const defaultBlockSize = 8
 
-func NewStorage(blockSize int) *Storage {
+func NewStorage(blockSize int,db *database.Database) *Storage {
 	if blockSize == 0 {
 		blockSize = defaultBlockSize
 	}
-	db := database.NewDatabase()
 	return &Storage{
 		BlockSize:     blockSize,
 		DefaultFolder: defautlFolderName,

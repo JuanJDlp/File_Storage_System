@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/JuanJDlp/File_Storage_System/internal"
+	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +17,8 @@ type FilesHandler struct {
 }
 
 // NewFileHandler create an instance of the fileHandler
-func NewFileHandler(e *echo.Group, storage *internal.Storage) *FilesHandler {
+func NewFileHandler(e *echo.Group, db *database.Database) *FilesHandler {
+	storage := internal.NewStorage(0,db)
 	return &FilesHandler{
 		e:       e,
 		storage: storage,

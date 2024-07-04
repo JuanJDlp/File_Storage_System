@@ -8,15 +8,17 @@ import (
 	"testing"
 
 	"github.com/JuanJDlp/File_Storage_System/internal"
+	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/joho/godotenv"
 )
 
 func TestGeneratePathFromFileName(t *testing.T) {
 	err := godotenv.Load("../.env")
+	db := database.NewDatabase()
 	if err != nil {
 		panic(err)
 	}
-	stg := internal.NewStorage(0)
+	stg := internal.NewStorage(0, db)
 	fileName := "Final Exam.pdf"
 	file := stg.CreatePathForFile(fileName)
 	expectedPath := "2fdbc3b3/fc1373f6/90d09213/4c6e764d/16a7c4d6/6b1216da/bd4681df/eb3ee96a/" + fileName
@@ -27,10 +29,11 @@ func TestGeneratePathFromFileName(t *testing.T) {
 
 func TestSaveFile(t *testing.T) {
 	err := godotenv.Load("../.env")
+	db := database.NewDatabase()
 	if err != nil {
 		panic(err)
 	}
-	stg := internal.NewStorage(0)
+	stg := internal.NewStorage(0, db)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	path := stg.CreatePathForFile(fileName)
@@ -52,15 +55,16 @@ func TestSaveFile(t *testing.T) {
 
 func TestReadFile(t *testing.T) {
 	err := godotenv.Load("../.env")
+	db := database.NewDatabase()
 	if err != nil {
 		panic(err)
 	}
-	stg := internal.NewStorage(0)
+	stg := internal.NewStorage(0, db)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	content := strings.NewReader(contentString)
 	stg.SaveFile(fileName, content, "j@gmail.com")
-	size, file, err := stg.ReadFile(fileName,"j@gmail.com")
+	size, file, err := stg.ReadFile(fileName, "j@gmail.com")
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -82,7 +86,8 @@ func TestDelete(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	stg := internal.NewStorage(0)
+	db := database.NewDatabase()
+	stg := internal.NewStorage(0, db)
 	contentString := "Hello, Reader!"
 	fileName := "Final Exam.txt"
 	content := strings.NewReader(contentString)

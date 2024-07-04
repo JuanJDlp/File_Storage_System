@@ -13,20 +13,18 @@ type router struct {
 }
 
 // NewRouter creates an instance of the echo router
-func NewRouter() *router {
+func NewRouter(db *database.Database) *router {
 	e := echo.New()
 	g := e.Group("/api/v1")
 
 	filesEcho := g.Group("/files")
 	usersEcho := g.Group("/users")
-	storage := internal.NewStorage(0)
-	db := database.NewDatabase()
 	jwt := internal.NewJwtService()
 	//Add auth to anything related with files
 	filesEcho.Use(jwt.ValidateJWT)
 
-	filesHanlder := NewFileHandler(filesEcho, storage)
-	userHanlder := NewUserHandler(usersEcho,db)
+	filesHanlder := NewFileHandler(filesEcho,db)
+	userHanlder := NewUserHandler(usersEcho, db)
 
 	return &router{
 		e:            e,
