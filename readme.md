@@ -87,11 +87,11 @@ Use this project however you want; it is designed to be a Google Drive clone, al
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Implement HTTPS
 - [ ] Improve the authentication using JWT (add refresh tokens)
-- [ ] Set up Fail2Ban
 - [ ] Deploy the system on a Raspberry Pi
 - [ ] Implement Cloudflare tunnels for internet access
+   - [ ] Implement HTTPS
+   - [ ] Set up Fail2Ban
 - [ ] Implement multiple file downloads
 
 
