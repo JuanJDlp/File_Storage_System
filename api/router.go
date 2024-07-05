@@ -4,6 +4,7 @@ import (
 	"github.com/JuanJDlp/File_Storage_System/internal"
 	"github.com/JuanJDlp/File_Storage_System/internal/database"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type router struct {
@@ -15,6 +16,10 @@ type router struct {
 // NewRouter creates an instance of the echo router
 func NewRouter(db *database.Database) *router {
 	e := echo.New()
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "id=${id} remote_ip=${remote_ip}  time=${time_unix}  method=${method}, uri=${uri}, status=${status} host=${host}\nuser_agent=${user_agent}\n\n",
+	}))
+	e.Use(middleware.Recover())
 	g := e.Group("/api/v1")
 
 	filesEcho := g.Group("/files")
@@ -23,7 +28,7 @@ func NewRouter(db *database.Database) *router {
 	//Add auth to anything related with files
 	filesEcho.Use(jwt.ValidateJWT)
 
-	filesHanlder := NewFileHandler(filesEcho,db)
+	filesHanlder := NewFileHandler(filesEcho, db)
 	userHanlder := NewUserHandler(usersEcho, db)
 
 	return &router{
