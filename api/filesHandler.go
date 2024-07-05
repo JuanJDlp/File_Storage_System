@@ -34,7 +34,7 @@ func (fh *FilesHandler) Start() {
 	fh.e.GET("/all", fh.GetAllFiles)
 }
 
-// saveFile will take the files uploaded by the user in the multipartForm and sabe them
+// saveFile will take the files uploaded by the user in the multipartForm and save them
 func (fh *FilesHandler) saveFile(c echo.Context) error {
 	id := c.Request().Context().Value(internal.ContextUserKey).(string)
 	form, err := c.MultipartForm()
