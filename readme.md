@@ -62,11 +62,14 @@ For setting up PostgreSQL on Ubuntu, refer to this tutorial: [How To Install and
    ```sh
    CREATE DATABASE file_storage;
    ```
-4. Build the project
+4. Create the .env file
+   You will need in this file your database configuration and the port where the server will be running. Make sure to create this file at the root level
+   
+6. Build the project
    ```sh
    go build main.go
    ```
-5. Run the project 
+7. Run the project 
    ```sh
    main
    ```
