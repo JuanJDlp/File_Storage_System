@@ -61,8 +61,8 @@ func (uh *UserHandler) logIn(c echo.Context) error {
 		}
 
 		response := struct {
-			Email string
-			Token string
+			Email string `json:"email"`
+			Token string `json:"token"`
 		}{
 			user.Email,
 			token,
@@ -101,11 +101,11 @@ func (uh *UserHandler) register(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "there was an error creating the user")
 	}
 	response := struct {
-		Email   string
-		created bool
+		Email   string `json:"email"`
+		Created bool `json:"created"`
 	}{
 		Email:   user.Email,
-		created: true,
+		Created: true,
 	}
 	return c.JSON(http.StatusOK, response)
 }

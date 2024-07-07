@@ -11,13 +11,13 @@ type FileRepository struct {
 	TableName string
 }
 
-//Clear will delete evrery file in the database
+// Clear will delete evrery file in the database
 func (fr *FileRepository) Clear() error {
 	_, err := fr.Database.connection.Exec("DELETE FROM files")
 	return err
 }
 
-//Save will save a file into the databe
+// Save will save a file into the databe
 func (fr *FileRepository) Save(file model.FileDatabase) error {
 	query := fmt.Sprintf("INSERT INTO %s VALUES ($1, $2, $3, $4, $5)", fr.TableName)
 	_, err := fr.Database.connection.Exec(query,
@@ -31,7 +31,7 @@ func (fr *FileRepository) Save(file model.FileDatabase) error {
 
 }
 
-//Delete will delete an specific file in the database
+// Delete will delete an specific file in the database
 func (fr *FileRepository) Delete(email, hash string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE hash = $1 AND owner = $2", fr.TableName)
 	_, err := fr.Database.connection.Exec(query,
@@ -74,7 +74,7 @@ func (fr *FileRepository) GetAllFilesFromUser(email string) (*[]model.FilesDTO, 
 
 	for rows.Next() {
 		var file model.FilesDTO
-		if err := rows.Scan(&file.FileName, &file.Size, &file.Date_of_upload); err != nil {
+		if err := rows.Scan(&file.FileName, &file.Size, &file.Date_Of_Upload); err != nil {
 			return nil, err
 		}
 		files = append(files, file)
