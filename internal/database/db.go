@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -34,15 +35,22 @@ func NewDatabase() *Database {
 	}
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable", config.host, config.port, config.user, config.password, config.dbname)
-
+	var connection *sql.DB
 	connection, err := sql.Open("postgres", connectionString)
 
 	if err != nil {
 		panic(err)
+
 	}
 
 	if err := connection.Ping(); err != nil {
-		panic(err)
+		time.Sleep(5 * time.Second)
+
+		connection, err = sql.Open("postgres", connectionString)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	err = runScript("internal/database/sql/creation_script.sql", connection)
