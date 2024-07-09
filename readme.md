@@ -18,8 +18,7 @@ It also counts with security (JWT) and a database integration for users (Postgre
 
 [![image](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org/)
 [![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+![image](https://skillicons.dev/icons?i=docker)
 
 
 <!-- GETTING STARTED -->
@@ -73,6 +72,12 @@ For setting up PostgreSQL on Ubuntu, refer to this tutorial: [How To Install and
    ```sh
    main
    ```
+
+Or if you have docker just run 
+
+```
+   docker compose up --build
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
